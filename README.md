@@ -16,3 +16,9 @@
 ```shell script
 ./gradlew test
 ```
+
+## API Usage
+
+Example of a valid API request using cURL:
+
+`curl -X POST  -H "Content-Type: text/plain" -d '{"Pete": "Nick", "Barbara": "Nick", "Nick": "Sophie", "Sophie": "Jonas"}' localhost:8080/api/hierarchy`
