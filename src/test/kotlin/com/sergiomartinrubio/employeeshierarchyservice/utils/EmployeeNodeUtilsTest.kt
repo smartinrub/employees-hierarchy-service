@@ -2,63 +2,64 @@ package com.sergiomartinrubio.employeeshierarchyservice.utils
 
 import com.sergiomartinrubio.employeeshierarchyservice.exception.InvalidEmployeeException
 import com.sergiomartinrubio.employeeshierarchyservice.exception.InvalidInputException
-import com.sergiomartinrubio.employeeshierarchyservice.model.EmployeeDto
+import com.sergiomartinrubio.employeeshierarchyservice.model.EmployeeNode
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class EmployeeHierarchyUtilsTest {
+class EmployeeNodeUtilsTest {
 
     @Test
-    fun givenEmployeesBySupervisorMapWhenFindRootEmployeeThenReturnRootEmployee() {
+    fun givenEmployeesBySupervisorMapWhenFindRootNodeEmployeeThenReturnRootEmployee() {
         // GIVEN
-        val employeeHierarchyUtils = EmployeeHierarchyUtils()
+        val employeeNodeUtils = EmployeeNodeUtils()
         val employeesBySupervisorMap = createEmployeesBySupervisorMap()
 
         // WHEN
-        val rootEmployeeResult = employeeHierarchyUtils.findRootEmployee(employeesBySupervisorMap)
+        val rootEmployeeResult = employeeNodeUtils.findRootEmployeeNode(employeesBySupervisorMap)
 
         // THEN
         assertThat(rootEmployeeResult.name).isEqualTo("Jonas")
         assertThat(rootEmployeeResult.employees!!.first().name).isEqualTo("Sophie")
         assertThat(rootEmployeeResult.supervisor).isNull()
+        assertThat(rootEmployeeResult.employees!!.first().supervisor!!.name).isEqualTo("Jonas")
     }
 
     @Test
-    fun givenEmptyMapWhenFindRootEmployeeThenReturnInvalidInputException() {
+    fun givenEmptyMapWhenFindRootNodeEmployeeThenReturnInvalidInputException() {
         // GIVEN
-        val employeeHierarchyUtils = EmployeeHierarchyUtils()
+        val employeeNodeUtils = EmployeeNodeUtils()
         val emptyMap = mapOf<String, List<String>>()
 
         // WHEN
         // THEN
-        Assertions.assertThatThrownBy { employeeHierarchyUtils.findRootEmployee(emptyMap) }
+        Assertions.assertThatThrownBy { employeeNodeUtils.findRootEmployeeNode(emptyMap) }
                 .isInstanceOf(InvalidInputException::class.java)
                 .hasMessageContaining("Please provide at least one employee/supervisor entry!")
     }
 
     @Test
-    fun givenEmployeesBySupervisorMapWithLoopsWhenFindRootEmployeeThenReturnInvalidInputException() {
+    fun givenEmployeesBySupervisorMapWithLoopsWhenFindRootNodeEmployeeThenReturnInvalidInputException() {
         // GIVEN
-        val employeeHierarchyUtils = EmployeeHierarchyUtils()
+        val employeeNodeUtils = EmployeeNodeUtils()
         val emptyMap = createEmployeesBySupervisorMapWithLoop()
 
         // WHEN
         // THEN
-        Assertions.assertThatThrownBy { employeeHierarchyUtils.findRootEmployee(emptyMap) }
+        Assertions.assertThatThrownBy { employeeNodeUtils.findRootEmployeeNode(emptyMap) }
                 .isInstanceOf(InvalidInputException::class.java)
                 .hasMessageContaining("The hierarchy contains loops!")
     }
 
     @Test
-    fun givenRootEmployeeAndMapOfEmployeeBySupervisorWhenBuildHierarchyTreeFromRootEmployeeThenReturnRootEmployWithHierarchy() {
+    fun givenRootEmployeeAndMapOfEmployeeBySupervisorWhenBuildHierarchyTreeFromRootNodeEmployeeThenReturnRootEmployWithHierarchy() {
         // GIVEN
-        val employeeHierarchyUtils = EmployeeHierarchyUtils()
+        val employeeNodeUtils = EmployeeNodeUtils()
         val rootEmployee = createRootEmployee()
         val employeesBySupervisorMap = createEmployeesBySupervisorMap()
 
         // WHEN
-        val employeeResult = employeeHierarchyUtils.buildHierarchyTreeFromRootEmployee(rootEmployee, employeesBySupervisorMap)
+        val employeeResult = employeeNodeUtils.buildHierarchyTreeFromRootEmployeeNode(rootEmployee, employeesBySupervisorMap)
 
         // THEN
         assertThat(employeeResult.name).isEqualTo("Jonas")
@@ -69,31 +70,49 @@ class EmployeeHierarchyUtilsTest {
     }
 
     @Test
-    fun givenInvalidEmployeeWhenBuildHierarchyTreeFromRootEmployeeThenThrowInvalidEmployeeException() {
+    fun givenInvalidEmployeeWhenBuildHierarchyTreeFromRootNodeEmployeeThenThrowInvalidEmployeeException() {
         // GIVEN
-        val employeeHierarchyUtils = EmployeeHierarchyUtils()
-        val invalidEmployee = EmployeeDto(null, "Jonas", null)
+        val employeeNodeUtils = EmployeeNodeUtils()
+        val invalidEmployee = EmployeeNode(null, "Jonas", null)
         val employeesBySupervisorMap = createEmployeesBySupervisorMap()
 
         // WHEN
         // THEN
-        Assertions.assertThatThrownBy { employeeHierarchyUtils.buildHierarchyTreeFromRootEmployee(invalidEmployee, employeesBySupervisorMap) }
+        Assertions.assertThatThrownBy { employeeNodeUtils.buildHierarchyTreeFromRootEmployeeNode(invalidEmployee, employeesBySupervisorMap) }
                 .isInstanceOf(InvalidEmployeeException::class.java)
                 .hasMessageContaining("List of Employees null")
     }
 
     @Test
-    fun givenMultipleRootsWhenBuildHierarchyTreeFromRootEmployeeThenThrowInvalidInputException() {
+    fun givenMultipleRootsWhenBuildHierarchyTreeFromRootNodeEmployeeThenThrowInvalidInputException() {
         // GIVEN
-        val employeeHierarchyUtils = EmployeeHierarchyUtils()
+        val employeeNodeUtils = EmployeeNodeUtils()
         val rootEmployee = createRootEmployee()
         val invalidMap = createEmployeesBySupervisorMapWithMultipleRoots()
 
         // WHEN
         // THEN
-        Assertions.assertThatThrownBy { employeeHierarchyUtils.buildHierarchyTreeFromRootEmployee(rootEmployee, invalidMap) }
+        Assertions.assertThatThrownBy { employeeNodeUtils.buildHierarchyTreeFromRootEmployeeNode(rootEmployee, invalidMap) }
                 .isInstanceOf(InvalidInputException::class.java)
                 .hasMessageContaining("Multiple roots")
+    }
+
+    @Test
+    fun givenRootEmployeeNodeWhenGetListOfEmployeeNodesThenReturnListOfEmployeeNodes() {
+        // GIVEN
+        val employeeNodeUtils = EmployeeNodeUtils()
+        val barbaraEmployeeNode = EmployeeNode(null, "Barbara", listOf())
+        val peteEmployeeNode = EmployeeNode(null, "Pete", listOf())
+        val nickEmployeeNode = EmployeeNode(null, "Nick", listOf(barbaraEmployeeNode, peteEmployeeNode))
+        val sophieEmployeeNode = EmployeeNode(null, "Sophie", listOf(nickEmployeeNode))
+        val jonasEmployeeNode = EmployeeNode(null, "Jonas", listOf(sophieEmployeeNode))
+
+        // WHEN
+        val employeeNodesResult = employeeNodeUtils.getListOfEmployeeNodes(jonasEmployeeNode)
+
+        // THEN
+        assertThat(employeeNodesResult).containsExactlyInAnyOrder(barbaraEmployeeNode, peteEmployeeNode,
+                nickEmployeeNode, sophieEmployeeNode, jonasEmployeeNode)
     }
 
     private fun createEmployeesBySupervisorMap(): Map<String, List<String>> {
@@ -121,9 +140,9 @@ class EmployeeHierarchyUtilsTest {
         )
     }
 
-    private fun createRootEmployee(): EmployeeDto {
-        val rootEmployee = EmployeeDto(null, "Jonas", null)
-        val employees = listOf(EmployeeDto(rootEmployee, "Sophie", listOf()))
+    private fun createRootEmployee(): EmployeeNode {
+        val rootEmployee = EmployeeNode(null, "Jonas", null)
+        val employees = listOf(EmployeeNode(rootEmployee, "Sophie", listOf()))
         rootEmployee.employees = employees
         return rootEmployee
     }

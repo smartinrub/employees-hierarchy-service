@@ -2,34 +2,42 @@ package com.sergiomartinrubio.employeeshierarchyservice.utils
 
 import com.sergiomartinrubio.employeeshierarchyservice.exception.InvalidEmployeeException
 import com.sergiomartinrubio.employeeshierarchyservice.exception.InvalidInputException
-import com.sergiomartinrubio.employeeshierarchyservice.model.EmployeeDto
+import com.sergiomartinrubio.employeeshierarchyservice.model.EmployeeNode
 import org.springframework.stereotype.Component
 
 @Component
-class EmployeeHierarchyUtils {
+class EmployeeNodeUtils {
 
-    fun findRootEmployee(employeesBySupervisorMap: Map<String, List<String>>): EmployeeDto {
+    fun findRootEmployeeNode(employeesBySupervisorMap: Map<String, List<String>>): EmployeeNode {
         val firstFoundSupervisor = employeesBySupervisorMap.keys.stream().findFirst()
         if (!firstFoundSupervisor.isPresent) {
             throw InvalidInputException("Invalid Data: Please provide at least one employee/supervisor entry!")
         }
         val rootSupervisorName = searchSupervisor(employeesBySupervisorMap, firstFoundSupervisor.get(), 0)
 
-        var rootSupervisor = EmployeeDto(null, null, null)
+        val rootNodeSupervisor = EmployeeNode(null, null, null)
         val employees = employeesBySupervisorMap
                 .getValue(rootSupervisorName)
-                .map { EmployeeDto(rootSupervisor, it, listOf()) }
+                .map { EmployeeNode(rootNodeSupervisor, it, listOf()) }
                 .toList()
-        rootSupervisor = EmployeeDto(null, rootSupervisorName, employees)
-        return rootSupervisor
+        rootNodeSupervisor.supervisor = null
+        rootNodeSupervisor.name = rootSupervisorName
+        rootNodeSupervisor.employees = employees
+        return rootNodeSupervisor
     }
 
-    fun buildHierarchyTreeFromRootEmployee(rootEmployee: EmployeeDto, employeesBySupervisorMap: Map<String, List<String>>): EmployeeDto {
+    fun buildHierarchyTreeFromRootEmployeeNode(rootEmployee: EmployeeNode, employeesBySupervisorMap: Map<String, List<String>>): EmployeeNode {
         val counter = buildTreeNode(rootEmployee, employeesBySupervisorMap, 1)
         if (counter < employeesBySupervisorMap.size) {
             throw InvalidInputException("Invalid Data: Multiple roots")
         }
         return rootEmployee
+    }
+
+    fun getListOfEmployeeNodes(rootEmployee: EmployeeNode): List<EmployeeNode> {
+        val employeeNodes = mutableListOf<EmployeeNode>()
+        getNodeEmployee(rootEmployee, employeeNodes)
+        return employeeNodes
     }
 
     private fun searchSupervisor(employeesBySupervisorMap: Map<String, List<String>>,
@@ -45,7 +53,7 @@ class EmployeeHierarchyUtils {
         return currentSupervisor
     }
 
-    private fun buildTreeNode(currentEmployee: EmployeeDto, employeesBySupervisorMap: Map<String, List<String>>, counter: Int): Int {
+    private fun buildTreeNode(currentEmployee: EmployeeNode, employeesBySupervisorMap: Map<String, List<String>>, counter: Int): Int {
         if (currentEmployee.employees == null) {
             throw InvalidEmployeeException("List of Employees null")
         }
@@ -56,11 +64,21 @@ class EmployeeHierarchyUtils {
                 return counter
             }
             employee.employees = employees
-                    .map { EmployeeDto(employee, it, listOf()) }
+                    .map { EmployeeNode(employee, it, listOf()) }
                     .toList()
             return buildTreeNode(employee, employeesBySupervisorMap, counter.inc())
         }
         return counter
+    }
+
+    private fun getNodeEmployee(employeeNode: EmployeeNode, employeeNodes: MutableList<EmployeeNode>) {
+        employeeNodes.add(employeeNode)
+        if (employeeNode.employees == null) {
+            return
+        }
+        for (employee in employeeNode.employees!!) {
+            getNodeEmployee(employee, employeeNodes)
+        }
     }
 
 }

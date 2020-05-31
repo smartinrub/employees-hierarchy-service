@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.sergiomartinrubio.employeeshierarchyservice.exception.InvalidEmployeeException
 import com.sergiomartinrubio.employeeshierarchyservice.exception.InvalidInputException
-import com.sergiomartinrubio.employeeshierarchyservice.model.EmployeeDto
+import com.sergiomartinrubio.employeeshierarchyservice.model.EmployeeNode
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Component
 
@@ -26,7 +26,7 @@ class JsonUtils {
         }
     }
 
-    fun transformFromRootEmployeeToJsonString(rootEmployee: EmployeeDto): String {
+    fun transformFromRootEmployeeToJsonString(rootEmployee: EmployeeNode): String {
         if (rootEmployee.name == null || rootEmployee.employees == null) {
             throw InvalidEmployeeException("Employee has name nul or list of employees null")
         }
@@ -39,7 +39,7 @@ class JsonUtils {
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(firstNode)
     }
 
-    private fun buildJsonHierarchy(supervisor: EmployeeDto, node: ObjectNode) {
+    private fun buildJsonHierarchy(supervisor: EmployeeNode, node: ObjectNode) {
         val newNode = node.putObject(supervisor.name)
 
         for (employee in supervisor.employees!!) {

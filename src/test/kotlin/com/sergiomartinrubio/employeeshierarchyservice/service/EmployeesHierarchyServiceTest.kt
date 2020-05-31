@@ -3,13 +3,13 @@ package com.sergiomartinrubio.employeeshierarchyservice.service
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.sergiomartinrubio.employeeshierarchyservice.model.EmployeeDto
-import com.sergiomartinrubio.employeeshierarchyservice.utils.EmployeeHierarchyUtils
+import com.sergiomartinrubio.employeeshierarchyservice.model.EmployeeNode
+import com.sergiomartinrubio.employeeshierarchyservice.utils.EmployeeNodeUtils
 import com.sergiomartinrubio.employeeshierarchyservice.utils.JsonUtils
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.BDDMockito
+import org.mockito.BDDMockito.*
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
@@ -21,7 +21,10 @@ class EmployeesHierarchyServiceTest {
     private lateinit var jsonUtils: JsonUtils
 
     @Mock
-    private lateinit var employeeHierarchyUtils: EmployeeHierarchyUtils
+    private lateinit var employeeNodeUtils: EmployeeNodeUtils
+
+    @Mock
+    private lateinit var employeePersistentService: EmployeePersistentService
 
     @InjectMocks
     private lateinit var employeesHierarchyService: EmployeesHierarchyService
@@ -35,30 +38,31 @@ class EmployeesHierarchyServiceTest {
         val firstNode = createFirstNode(mapper)
         val rootEmployee = createRootEmployee()
         val employeesBySupervisorMap = createEmployeesBySupervisorMap()
-        val resultEmployee = createResultEmployee()
-        BDDMockito.given(jsonUtils.transformFromJsonStringToJsonNode(jsonInput)).willReturn(firstNode)
-        BDDMockito.given(employeeHierarchyUtils.findRootEmployee(employeesBySupervisorMap)).willReturn(rootEmployee)
-        BDDMockito.given(employeeHierarchyUtils.buildHierarchyTreeFromRootEmployee(rootEmployee, employeesBySupervisorMap))
-                .willReturn(resultEmployee)
-        BDDMockito.given(jsonUtils.transformFromRootEmployeeToJsonString(resultEmployee)).willReturn(jsonOutput)
+        val rootEmployeeWithHierarchy = createResultEmployee()
+        given(jsonUtils.transformFromJsonStringToJsonNode(jsonInput)).willReturn(firstNode)
+        given(employeeNodeUtils.findRootEmployeeNode(employeesBySupervisorMap)).willReturn(rootEmployee)
+        given(employeeNodeUtils.buildHierarchyTreeFromRootEmployeeNode(rootEmployee, employeesBySupervisorMap))
+                .willReturn(rootEmployeeWithHierarchy)
+        given(jsonUtils.transformFromRootEmployeeToJsonString(rootEmployeeWithHierarchy)).willReturn(jsonOutput)
 
         // WHEN
         val jsonResult = employeesHierarchyService.processHierarchy(jsonInput)
 
         // THEN
         assertThat(jsonResult).isEqualTo(jsonOutput)
-        BDDMockito.then(jsonUtils).should().transformFromJsonStringToJsonNode(jsonInput)
-        BDDMockito.then(employeeHierarchyUtils).should().findRootEmployee(employeesBySupervisorMap)
-        BDDMockito.then(employeeHierarchyUtils).should().buildHierarchyTreeFromRootEmployee(rootEmployee, employeesBySupervisorMap)
-        BDDMockito.then(jsonUtils).should().transformFromRootEmployeeToJsonString(resultEmployee)
+        then(jsonUtils).should().transformFromJsonStringToJsonNode(jsonInput)
+        then(employeeNodeUtils).should().findRootEmployeeNode(employeesBySupervisorMap)
+        then(employeeNodeUtils).should().buildHierarchyTreeFromRootEmployeeNode(rootEmployee, employeesBySupervisorMap)
+        then(employeePersistentService).should().saveEmployees(rootEmployeeWithHierarchy)
+        then(jsonUtils).should().transformFromRootEmployeeToJsonString(rootEmployeeWithHierarchy)
     }
 
-    private fun createResultEmployee(): EmployeeDto {
-        return EmployeeDto(null, "Jonas",
-                listOf(EmployeeDto(null, "Sophie",
-                        listOf(EmployeeDto(null, "Nick",
-                                listOf(EmployeeDto(null, "Pete", listOf()),
-                                        EmployeeDto(null, "Barbara", listOf())))))))
+    private fun createResultEmployee(): EmployeeNode {
+        return EmployeeNode(null, "Jonas",
+                listOf(EmployeeNode(null, "Sophie",
+                        listOf(EmployeeNode(null, "Nick",
+                                listOf(EmployeeNode(null, "Pete", listOf()),
+                                        EmployeeNode(null, "Barbara", listOf())))))))
     }
 
     private fun createEmployeesBySupervisorMap(): Map<String, List<String>> {
@@ -69,9 +73,9 @@ class EmployeesHierarchyServiceTest {
         )
     }
 
-    private fun createRootEmployee(): EmployeeDto {
-        val rootEmployee = EmployeeDto(null, "Jonas", null)
-        val employees = listOf(EmployeeDto(rootEmployee, "Sophie", listOf()))
+    private fun createRootEmployee(): EmployeeNode {
+        val rootEmployee = EmployeeNode(null, "Jonas", null)
+        val employees = listOf(EmployeeNode(rootEmployee, "Sophie", listOf()))
         rootEmployee.employees = employees
         return rootEmployee
     }
