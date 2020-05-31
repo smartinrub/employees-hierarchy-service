@@ -11,7 +11,7 @@ import org.springframework.web.context.request.WebRequest
 class EmployeesHierarchyController(private val employeesHierarchyService: EmployeesHierarchyService) {
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/api/hierarchy")
+    @PostMapping("/employees")
     fun buildHierarchy(@RequestBody input: String): String {
         return employeesHierarchyService.processHierarchy(input)
     }

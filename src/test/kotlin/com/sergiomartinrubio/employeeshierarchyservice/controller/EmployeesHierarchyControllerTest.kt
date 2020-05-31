@@ -32,7 +32,7 @@ class EmployeesHierarchyControllerTest {
         BDDMockito.given(employeesHierarchyService.processHierarchy(requestBody)).willReturn(responseBody)
 
         // WHEN
-        val result = mvc.perform(MockMvcRequestBuilders.post("/api/hierarchy")
+        val result = mvc.perform(MockMvcRequestBuilders.post("/employees")
                 .contentType(MediaType.TEXT_PLAIN)
                 .content(requestBody))
                 .andExpect(MockMvcResultMatchers.status().isCreated)
@@ -50,7 +50,7 @@ class EmployeesHierarchyControllerTest {
                 .willThrow(InvalidInputException("Invalid body"))
 
         // WHEN
-        val result = mvc.perform(MockMvcRequestBuilders.post("/api/hierarchy")
+        val result = mvc.perform(MockMvcRequestBuilders.post("/employees")
                 .contentType(MediaType.TEXT_PLAIN)
                 .content(requestBody))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest)
