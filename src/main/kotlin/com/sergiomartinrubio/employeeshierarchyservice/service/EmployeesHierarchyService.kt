@@ -26,6 +26,6 @@ class EmployeesHierarchyService(private val jsonUtils: JsonUtils,
     }
 
     fun getSupervisor(name: String): Employee {
-        return Employee(null, null)
+        return employeePersistentService.getSupervisor(name)
     }
 }

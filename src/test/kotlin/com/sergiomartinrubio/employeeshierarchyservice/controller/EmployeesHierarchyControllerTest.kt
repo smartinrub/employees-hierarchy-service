@@ -1,5 +1,6 @@
 package com.sergiomartinrubio.employeeshierarchyservice.controller
 
+import com.sergiomartinrubio.employeeshierarchyservice.exception.EmployeeNotFoundException
 import com.sergiomartinrubio.employeeshierarchyservice.exception.InvalidInputException
 import com.sergiomartinrubio.employeeshierarchyservice.model.Employee
 import com.sergiomartinrubio.employeeshierarchyservice.service.EmployeesHierarchyService
@@ -76,5 +77,21 @@ class EmployeesHierarchyControllerTest {
 
         // THEN
         Assertions.assertThat(result.response.contentAsString).isEqualTo(response)
+    }
+
+    @Test
+    fun givenEmployeeNotFoundWhenGetSupervisorRequestThenReturnNotFoundResponse() {
+        // GIVEN
+        val employeeName = "Nick"
+        given(employeesHierarchyService.getSupervisor(employeeName))
+                .willThrow(EmployeeNotFoundException("Employee not found"))
+
+        // WHEN
+        val result = mvc.perform(MockMvcRequestBuilders.get("/employees/{name}/supervisor", employeeName))
+                .andExpect(MockMvcResultMatchers.status().isNotFound)
+                .andReturn()
+
+        // THEN
+        Assertions.assertThat(result.response.contentAsString).isEqualTo("Employee not found")
     }
 }
