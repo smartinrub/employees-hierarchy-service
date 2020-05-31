@@ -1,5 +1,6 @@
 package com.sergiomartinrubio.employeeshierarchyservice.service
 
+import com.sergiomartinrubio.employeeshierarchyservice.model.Employee
 import com.sergiomartinrubio.employeeshierarchyservice.utils.EmployeeNodeUtils
 import com.sergiomartinrubio.employeeshierarchyservice.utils.JsonUtils
 import org.springframework.stereotype.Service
@@ -22,5 +23,9 @@ class EmployeesHierarchyService(private val jsonUtils: JsonUtils,
         employeePersistentService.saveEmployees(rootEmployeeWithHierarchy)
 
         return jsonUtils.transformFromRootEmployeeToJsonString(rootEmployeeWithHierarchy)
+    }
+
+    fun getSupervisor(name: String): Employee {
+        return Employee(null, null)
     }
 }

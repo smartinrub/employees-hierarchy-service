@@ -1,6 +1,7 @@
 package com.sergiomartinrubio.employeeshierarchyservice.controller
 
 import com.sergiomartinrubio.employeeshierarchyservice.exception.InvalidInputException
+import com.sergiomartinrubio.employeeshierarchyservice.model.Employee
 import com.sergiomartinrubio.employeeshierarchyservice.service.EmployeesHierarchyService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -14,6 +15,12 @@ class EmployeesHierarchyController(private val employeesHierarchyService: Employ
     @PostMapping("/employees")
     fun buildHierarchy(@RequestBody input: String): String {
         return employeesHierarchyService.processHierarchy(input)
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/employees/{name}/supervisor")
+    fun getSupervisor(@PathVariable("name") name: String): Employee {
+        return employeesHierarchyService.getSupervisor(name)
     }
 
     @ExceptionHandler(value = [(InvalidInputException::class)])

@@ -1,10 +1,11 @@
 package com.sergiomartinrubio.employeeshierarchyservice.controller
 
 import com.sergiomartinrubio.employeeshierarchyservice.exception.InvalidInputException
+import com.sergiomartinrubio.employeeshierarchyservice.model.Employee
 import com.sergiomartinrubio.employeeshierarchyservice.service.EmployeesHierarchyService
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito
+import org.mockito.BDDMockito.given
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -29,7 +30,7 @@ class EmployeesHierarchyControllerTest {
         // GIVEN
         val requestBody = "{\"Pete\": \"Nick\", \"Barbara\": \"Nick\", \"Nick\": \"Sophie\", \"Sophie\": \"Jonas\"}"
         val responseBody = "{\"Jonas\": { \"Sophie\": {\"Nick\": { \"Pete\": {},\"Barbara\": {} }} }}"
-        BDDMockito.given(employeesHierarchyService.processHierarchy(requestBody)).willReturn(responseBody)
+        given(employeesHierarchyService.processHierarchy(requestBody)).willReturn(responseBody)
 
         // WHEN
         val result = mvc.perform(MockMvcRequestBuilders.post("/employees")
@@ -46,7 +47,7 @@ class EmployeesHierarchyControllerTest {
     fun givenWrongBodyWhenPostRequestThenReturnCorrectResponseBodyAndBadRequest() {
         // GIVEN
         val requestBody = "Invalid json"
-        BDDMockito.given(employeesHierarchyService.processHierarchy(requestBody))
+        given(employeesHierarchyService.processHierarchy(requestBody))
                 .willThrow(InvalidInputException("Invalid body"))
 
         // WHEN
@@ -58,5 +59,22 @@ class EmployeesHierarchyControllerTest {
 
         // THEN
         Assertions.assertThat(result.response.contentAsString).isEqualTo("Invalid body")
+    }
+
+    @Test
+    fun givenEmployeeNameWhenGetSupervisorRequestThenReturnSupervisorWithSupervisorsSupervisorName() {
+        // GIVEN
+        val employeeName = "Nick"
+        val supervisor = Employee("Sophie", "Jonas")
+        val response = "{\"name\":\"Sophie\",\"supervisor\":\"Jonas\"}"
+        given(employeesHierarchyService.getSupervisor(employeeName)).willReturn(supervisor)
+
+        // WHEN
+        val result = mvc.perform(MockMvcRequestBuilders.get("/employees/{name}/supervisor", employeeName))
+                .andExpect(MockMvcResultMatchers.status().isOk)
+                .andReturn()
+
+        // THEN
+        Assertions.assertThat(result.response.contentAsString).isEqualTo(response)
     }
 }
