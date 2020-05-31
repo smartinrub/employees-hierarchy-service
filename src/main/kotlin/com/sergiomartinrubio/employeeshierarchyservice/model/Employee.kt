@@ -1,3 +1,9 @@
 package com.sergiomartinrubio.employeeshierarchyservice.model
 
-data class Employee(val supervisor: Employee?, val name: String?, var employees: List<Employee>?)
+import javax.persistence.Entity
+import javax.persistence.Id
+import javax.persistence.Table
+
+@Entity
+@Table
+data class Employee(@Id val name: String, val supervisor: String)

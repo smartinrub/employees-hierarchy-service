@@ -2,7 +2,7 @@ package com.sergiomartinrubio.employeeshierarchyservice.utils
 
 import com.sergiomartinrubio.employeeshierarchyservice.exception.InvalidEmployeeException
 import com.sergiomartinrubio.employeeshierarchyservice.exception.InvalidInputException
-import com.sergiomartinrubio.employeeshierarchyservice.model.Employee
+import com.sergiomartinrubio.employeeshierarchyservice.model.EmployeeDto
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -72,7 +72,7 @@ class EmployeeHierarchyUtilsTest {
     fun givenInvalidEmployeeWhenBuildHierarchyTreeFromRootEmployeeThenThrowInvalidEmployeeException() {
         // GIVEN
         val employeeHierarchyUtils = EmployeeHierarchyUtils()
-        val invalidEmployee = Employee(null, "Jonas", null)
+        val invalidEmployee = EmployeeDto(null, "Jonas", null)
         val employeesBySupervisorMap = createEmployeesBySupervisorMap()
 
         // WHEN
@@ -121,9 +121,9 @@ class EmployeeHierarchyUtilsTest {
         )
     }
 
-    private fun createRootEmployee(): Employee {
-        val rootEmployee = Employee(null, "Jonas", null)
-        val employees = listOf(Employee(rootEmployee, "Sophie", listOf()))
+    private fun createRootEmployee(): EmployeeDto {
+        val rootEmployee = EmployeeDto(null, "Jonas", null)
+        val employees = listOf(EmployeeDto(rootEmployee, "Sophie", listOf()))
         rootEmployee.employees = employees
         return rootEmployee
     }

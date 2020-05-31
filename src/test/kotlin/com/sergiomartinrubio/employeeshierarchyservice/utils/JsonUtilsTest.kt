@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.sergiomartinrubio.employeeshierarchyservice.exception.InvalidEmployeeException
 import com.sergiomartinrubio.employeeshierarchyservice.exception.InvalidInputException
-import com.sergiomartinrubio.employeeshierarchyservice.model.Employee
+import com.sergiomartinrubio.employeeshierarchyservice.model.EmployeeDto
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -69,7 +69,7 @@ class JsonUtilsTest {
 
         // WHEN
         // THEN
-        Assertions.assertThatThrownBy { jsonUtils.transformFromRootEmployeeToJsonString(Employee(null, null, null)) }
+        Assertions.assertThatThrownBy { jsonUtils.transformFromRootEmployeeToJsonString(EmployeeDto(null, null, null)) }
                 .isInstanceOf(InvalidEmployeeException::class.java)
                 .hasMessageContaining("Employee has name nul or list of employees null")
     }
@@ -82,12 +82,12 @@ class JsonUtilsTest {
                 .put("Sophie", "Jonas")
     }
 
-    private fun createResultEmployee(): Employee {
-        return Employee(null, "Jonas",
-                listOf(Employee(null, "Sophie",
-                        listOf(Employee(null, "Nick",
-                                listOf(Employee(null, "Pete", listOf()),
-                                        Employee(null, "Barbara", listOf())))))))
+    private fun createResultEmployee(): EmployeeDto {
+        return EmployeeDto(null, "Jonas",
+                listOf(EmployeeDto(null, "Sophie",
+                        listOf(EmployeeDto(null, "Nick",
+                                listOf(EmployeeDto(null, "Pete", listOf()),
+                                        EmployeeDto(null, "Barbara", listOf())))))))
     }
 
 }

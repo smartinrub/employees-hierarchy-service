@@ -3,7 +3,7 @@ package com.sergiomartinrubio.employeeshierarchyservice.service
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.sergiomartinrubio.employeeshierarchyservice.model.Employee
+import com.sergiomartinrubio.employeeshierarchyservice.model.EmployeeDto
 import com.sergiomartinrubio.employeeshierarchyservice.utils.EmployeeHierarchyUtils
 import com.sergiomartinrubio.employeeshierarchyservice.utils.JsonUtils
 import org.assertj.core.api.Assertions.assertThat
@@ -53,12 +53,12 @@ class EmployeesHierarchyServiceTest {
         BDDMockito.then(jsonUtils).should().transformFromRootEmployeeToJsonString(resultEmployee)
     }
 
-    private fun createResultEmployee(): Employee {
-        return Employee(null, "Jonas",
-                listOf(Employee(null, "Sophie",
-                        listOf(Employee(null, "Nick",
-                                listOf(Employee(null, "Pete", listOf()),
-                                        Employee(null, "Barbara", listOf())))))))
+    private fun createResultEmployee(): EmployeeDto {
+        return EmployeeDto(null, "Jonas",
+                listOf(EmployeeDto(null, "Sophie",
+                        listOf(EmployeeDto(null, "Nick",
+                                listOf(EmployeeDto(null, "Pete", listOf()),
+                                        EmployeeDto(null, "Barbara", listOf())))))))
     }
 
     private fun createEmployeesBySupervisorMap(): Map<String, List<String>> {
@@ -69,9 +69,9 @@ class EmployeesHierarchyServiceTest {
         )
     }
 
-    private fun createRootEmployee(): Employee {
-        val rootEmployee = Employee(null, "Jonas", null)
-        val employees = listOf(Employee(rootEmployee, "Sophie", listOf()))
+    private fun createRootEmployee(): EmployeeDto {
+        val rootEmployee = EmployeeDto(null, "Jonas", null)
+        val employees = listOf(EmployeeDto(rootEmployee, "Sophie", listOf()))
         rootEmployee.employees = employees
         return rootEmployee
     }
