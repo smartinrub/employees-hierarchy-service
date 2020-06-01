@@ -23,13 +23,13 @@
     - username: admin
     - password: secret
 
-`curl -X POST -H "Content-Type: application/json" -d '{"username": "admin", "password": "secret"}' localhost:8080/authenticate`
+    `curl -X POST -H "Content-Type: application/json" -d '{"username": "admin", "password": "secret"}' localhost:8080/authenticate`
     
     Response example:
     
-```shell script
-YMKXuwGFC_sFZB-sreygU9zMSYjte_sH
-```
+    ```
+    YMKXuwGFC_sFZB-sreygU9zMSYjte_sH
+    ```
 
 - Create and get employees hierarchy Example
 
@@ -37,7 +37,7 @@ YMKXuwGFC_sFZB-sreygU9zMSYjte_sH
     
     Response example:
     
-    ```shell script
+    ```json
     {
       "Jonas" : {
         "Sophie" : {
@@ -60,7 +60,7 @@ YMKXuwGFC_sFZB-sreygU9zMSYjte_sH
     
     Response example:
     
-    ```shell script
+    ```json
     {
       "name":"Sophie",
       "supervisor":"Jonas"
