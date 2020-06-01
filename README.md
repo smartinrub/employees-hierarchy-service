@@ -19,14 +19,50 @@
 
 ## API Usage
 
-- Create and get employees hierarchy
+- Get authentication token. User is preloaded in DB with credentials: 
+    - username: admin
+    - password: secret
 
-`curl -X POST  -H "Content-Type: text/plain" -d '{"Pete": "Nick", "Barbara": "Nick", "Nick": "Sophie", "Sophie": "Jonas"}' localhost:8080/employees`
+    `curl -X POST -H "Content-Type: application/json" -d '{"username": "admin", "password": "secret"}' localhost:8080/authenticate`
+    
+    Response example:
+    
+    ```shell script
+    YMKXuwGFC_sFZB-sreygU9zMSYjte_sH
+    ```
+
+- Create and get employees hierarchy Example
+
+    `curl -X POST -H "Content-Type: application/json" -H "Authorization: YMKXuwGFC_sFZB-sreygU9zMSYjte_sH" -d '{"Pete": "Nick", "Barbara": "Nick", "Nick": "Sophie", "Sophie": "Jonas"}' localhost:8080/employees`
+    
+    Response example:
+    
+    ```shell script
+    {
+      "Jonas" : {
+        "Sophie" : {
+          "Nick" : {
+            "Pete" : { },
+            "Barbara" : { }
+          }
+        }
+      }
+    }
+    ```
 
 - Get supervisor name and supervisor's supervisor name
 
-`curl -X GET localhost:8080/employees/{name}/supervisor`
+    `curl -X GET -H "Authorization: <TOKEN>" localhost:8080/employees/{name}/supervisor`
 
-e.g. 
-
-`curl -X GET localhost:8080/employees/Nick/supervisor`
+    Request example:
+    
+    `curl -X GET -H "Authorization: YMKXuwGFC_sFZB-sreygU9zMSYjte_sH" localhost:8080/employees/Nick/supervisor`
+    
+    Response example:
+    
+    ```shell script
+    {
+      "name":"Sophie",
+      "supervisor":"Jonas"
+    }
+    ```

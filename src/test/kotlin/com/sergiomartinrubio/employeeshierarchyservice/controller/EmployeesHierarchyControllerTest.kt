@@ -4,13 +4,16 @@ import com.sergiomartinrubio.employeeshierarchyservice.exception.EmployeeNotFoun
 import com.sergiomartinrubio.employeeshierarchyservice.exception.InvalidInputException
 import com.sergiomartinrubio.employeeshierarchyservice.model.Employee
 import com.sergiomartinrubio.employeeshierarchyservice.service.EmployeesHierarchyService
+import com.sergiomartinrubio.employeeshierarchyservice.service.SessionService
 import org.assertj.core.api.Assertions
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -20,11 +23,21 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 @AutoConfigureMockMvc
 class EmployeesHierarchyControllerTest {
 
+    private val AUTHORIZATION_TOKEN = "YMKXuwGFC_sFZB-sreygU9zMSYjte_sH"
+
     @MockBean
     private lateinit var employeesHierarchyService: EmployeesHierarchyService
 
+    @MockBean
+    private lateinit var sessionService: SessionService
+
     @Autowired
     private lateinit var mvc: MockMvc
+
+    @BeforeEach
+    fun setup() {
+        given(sessionService.isValidSession(AUTHORIZATION_TOKEN)).willReturn(true)
+    }
 
     @Test
     fun givenCorrectBodyWhenPostRequestThenReturnCorrectResponseBodyAndNoContentStatus() {
@@ -35,6 +48,7 @@ class EmployeesHierarchyControllerTest {
 
         // WHEN
         val result = mvc.perform(MockMvcRequestBuilders.post("/employees")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_TOKEN)
                 .contentType(MediaType.TEXT_PLAIN)
                 .content(requestBody))
                 .andExpect(MockMvcResultMatchers.status().isCreated)
@@ -53,6 +67,7 @@ class EmployeesHierarchyControllerTest {
 
         // WHEN
         val result = mvc.perform(MockMvcRequestBuilders.post("/employees")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_TOKEN)
                 .contentType(MediaType.TEXT_PLAIN)
                 .content(requestBody))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest)
@@ -71,7 +86,8 @@ class EmployeesHierarchyControllerTest {
         given(employeesHierarchyService.getSupervisor(employeeName)).willReturn(supervisor)
 
         // WHEN
-        val result = mvc.perform(MockMvcRequestBuilders.get("/employees/{name}/supervisor", employeeName))
+        val result = mvc.perform(MockMvcRequestBuilders.get("/employees/{name}/supervisor", employeeName)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_TOKEN))
                 .andExpect(MockMvcResultMatchers.status().isOk)
                 .andReturn()
 
@@ -87,7 +103,8 @@ class EmployeesHierarchyControllerTest {
                 .willThrow(EmployeeNotFoundException("Employee not found"))
 
         // WHEN
-        val result = mvc.perform(MockMvcRequestBuilders.get("/employees/{name}/supervisor", employeeName))
+        val result = mvc.perform(MockMvcRequestBuilders.get("/employees/{name}/supervisor", employeeName)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_TOKEN))
                 .andExpect(MockMvcResultMatchers.status().isNotFound)
                 .andReturn()
 

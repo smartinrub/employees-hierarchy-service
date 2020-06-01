@@ -17,3 +17,52 @@ databaseChangeLog:
                   type: varchar(255)
                   constraints:
                     nullable: true
+  - changeSet:
+      id: create-credentials-table
+      author: Sergio Martin Rubio
+      changes:
+        - createTable:
+            tableName: credentials
+            columns:
+              - column:
+                  name: username
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: add-entry-to-credentials-table
+      author: Sergio Martin Rubio
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name:  username
+                  value:  admin
+              - column:
+                  name:  password
+                  value:  secret
+            tableName:  credentials
+  - changeSet:
+      id: create-session-table
+      author: Sergio Martin Rubio
+      changes:
+        - createTable:
+            tableName: session
+            columns:
+              - column:
+                  name: token
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: creation_date_time
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
