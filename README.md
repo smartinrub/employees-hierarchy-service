@@ -11,6 +11,12 @@
 ./gradlew bootrun
 ```
 
+Once it's built the service can be also run like this:
+
+```
+java -jar /build/libs/employees-hierarchy-service-0.0.1-SNAPSHOT.jar
+```
+
 ## Running Tests
 
 ```
