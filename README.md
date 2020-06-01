@@ -38,7 +38,8 @@ YMKXuwGFC_sFZB-sreygU9zMSYjte_sH
 ```shell script
 curl -X POST -H "Content-Type: application/json" -H "Authorization: YMKXuwGFC_sFZB-sreygU9zMSYjte_sH" -d '{"Pete": "Nick", "Barbara": "Nick", "Nick": "Sophie", "Sophie": "Jonas"}' localhost:8080/employees
 ```
-    Response example:
+
+- Response example:
     
 ```json
 {
@@ -59,13 +60,13 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: YMKXuwGFC_sF
 curl -X GET -H "Authorization: <TOKEN>" localhost:8080/employees/{name}/supervisor
 ```
 
-Request example:
+- Request example:
 
 ```shell script
 curl -X GET -H "Authorization: YMKXuwGFC_sFZB-sreygU9zMSYjte_sH" localhost:8080/employees/Nick/supervisor
 ```
 
-Response example:
+- Response example:
     
 ```json
 {
