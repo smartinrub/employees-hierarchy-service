@@ -27,7 +27,7 @@
 curl -X POST -H "Content-Type: application/json" -d '{"username": "admin", "password": "secret"}' localhost:8080/authenticate
 ```
     
-Response example:
+- Response example:
     
 ```
 YMKXuwGFC_sFZB-sreygU9zMSYjte_sH
