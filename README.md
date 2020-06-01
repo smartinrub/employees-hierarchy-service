@@ -6,14 +6,14 @@
 
 ## Running Hierarchy Service
 
-```shell script
+```
 ./gradlew build
 ./gradlew bootrun
 ```
 
 ## Running Tests
 
-```shell script
+```
 ./gradlew test
 ```
 
@@ -23,7 +23,7 @@
     - username: admin
     - password: secret
     
-```shell script
+```
 curl -X POST -H "Content-Type: application/json" -d '{"username": "admin", "password": "secret"}' localhost:8080/authenticate
 ```
     
@@ -35,7 +35,7 @@ YMKXuwGFC_sFZB-sreygU9zMSYjte_sH
 
 - Create and get employees hierarchy Example
 
-```shell script
+```
 curl -X POST -H "Content-Type: application/json" -H "Authorization: YMKXuwGFC_sFZB-sreygU9zMSYjte_sH" -d '{"Pete": "Nick", "Barbara": "Nick", "Nick": "Sophie", "Sophie": "Jonas"}' localhost:8080/employees
 ```
 
@@ -56,13 +56,13 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: YMKXuwGFC_sF
 
 - Get supervisor name and supervisor's supervisor name
 
-```shell script
+```
 curl -X GET -H "Authorization: <TOKEN>" localhost:8080/employees/{name}/supervisor
 ```
 
 - Request example:
 
-```shell script
+```
 curl -X GET -H "Authorization: YMKXuwGFC_sFZB-sreygU9zMSYjte_sH" localhost:8080/employees/Nick/supervisor
 ```
 
