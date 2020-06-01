@@ -22,47 +22,54 @@
 - Get authentication token. User is preloaded in DB with credentials: 
     - username: admin
     - password: secret
-
-    `curl -X POST -H "Content-Type: application/json" -d '{"username": "admin", "password": "secret"}' localhost:8080/authenticate`
     
-    Response example:
+```shell script
+curl -X POST -H "Content-Type: application/json" -d '{"username": "admin", "password": "secret"}' localhost:8080/authenticate
+```
     
-    ```
-    YMKXuwGFC_sFZB-sreygU9zMSYjte_sH
-    ```
+Response example:
+    
+```
+YMKXuwGFC_sFZB-sreygU9zMSYjte_sH
+```
 
 - Create and get employees hierarchy Example
 
-    `curl -X POST -H "Content-Type: application/json" -H "Authorization: YMKXuwGFC_sFZB-sreygU9zMSYjte_sH" -d '{"Pete": "Nick", "Barbara": "Nick", "Nick": "Sophie", "Sophie": "Jonas"}' localhost:8080/employees`
-    
+```shell script
+curl -X POST -H "Content-Type: application/json" -H "Authorization: YMKXuwGFC_sFZB-sreygU9zMSYjte_sH" -d '{"Pete": "Nick", "Barbara": "Nick", "Nick": "Sophie", "Sophie": "Jonas"}' localhost:8080/employees
+```
     Response example:
     
-    ```
-    {
-      "Jonas" : {
-        "Sophie" : {
-          "Nick" : {
-            "Pete" : { },
-            "Barbara" : { }
-          }
-        }
+```json
+{
+  "Jonas" : {
+    "Sophie" : {
+      "Nick" : {
+        "Pete" : { },
+        "Barbara" : { }
       }
     }
-    ```
+  }
+}
+```
 
 - Get supervisor name and supervisor's supervisor name
 
-    `curl -X GET -H "Authorization: <TOKEN>" localhost:8080/employees/{name}/supervisor`
+```shell script
+curl -X GET -H "Authorization: <TOKEN>" localhost:8080/employees/{name}/supervisor
+```
 
-    Request example:
+Request example:
+
+```shell script
+curl -X GET -H "Authorization: YMKXuwGFC_sFZB-sreygU9zMSYjte_sH" localhost:8080/employees/Nick/supervisor
+```
+
+Response example:
     
-    `curl -X GET -H "Authorization: YMKXuwGFC_sFZB-sreygU9zMSYjte_sH" localhost:8080/employees/Nick/supervisor`
-    
-    Response example:
-    
-    ```
-    {
-      "name":"Sophie",
-      "supervisor":"Jonas"
-    }
-    ```
+```json
+{
+  "name":"Sophie",
+  "supervisor":"Jonas"
+}
+```
