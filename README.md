@@ -37,7 +37,7 @@
     
     Response example:
     
-    ```json
+    ```
     {
       "Jonas" : {
         "Sophie" : {
@@ -60,7 +60,7 @@
     
     Response example:
     
-    ```json
+    ```
     {
       "name":"Sophie",
       "supervisor":"Jonas"
