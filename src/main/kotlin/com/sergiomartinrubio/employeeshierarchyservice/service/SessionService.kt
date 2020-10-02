@@ -20,8 +20,8 @@ class SessionService(private val sessionRepository: SessionRepository,
     fun isValidSession(token: String): Boolean {
         val session = sessionRepository.findById(token)
 
-        // token is not valid after 60 seconds
-        if (session.isEmpty || session.get().creationDateTime.plusSeconds(60L).isBefore(LocalDateTime.now())) {
+        // token is not valid after 3 minutes
+        if (session.isEmpty || session.get().creationDateTime.plusSeconds(180L).isBefore(LocalDateTime.now())) {
             return false
         }
         return true
